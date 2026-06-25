@@ -9,6 +9,12 @@ Author  : Srivignesh
 
 =========================================================
 """
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 import pandas as pd
 from datetime import datetime
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -16,22 +22,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend.app.config import FRONTEND_DIR, MODEL_VERSION
-from backend.app.predictor import (
+from app.config import FRONTEND_DIR, MODEL_VERSION
+from app.predictor import (
     predict_price,
     estimate_damage_cost,
     calculate_confidence_score,
     compute_suggested_price,
     calculate_transaction_price,
 )
-from backend.app.schemas import (
+from app.schemas import (
     AppMetadata,
     ImageAnalysisResponse,
     PredictionHistoryItem,
     PredictionResponse,
     VehicleInput,
 )
-from backend.app.utils import (
+from app.utils import (
     init_db,
     list_brands,
     list_models,
@@ -46,7 +52,7 @@ from backend.app.utils import (
     count_models,
     count_predictions,
 )
-from backend.app.bedrock_vision import analyze_vehicle_image_with_bedrock, detect_vehicle_damage_with_bedrock
+from app.bedrock_vision import analyze_vehicle_image_with_bedrock, detect_vehicle_damage_with_bedrock
 
 # Import Dynamic Pricing Engine
 from pricing import DynamicPricingEngine

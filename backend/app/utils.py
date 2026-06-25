@@ -1,7 +1,7 @@
 import json
 import sqlite3
 
-from backend.app.config import DB_PATH, JSON_PATH
+from app.config import DB_PATH, JSON_PATH
 
 
 def get_db_connection():

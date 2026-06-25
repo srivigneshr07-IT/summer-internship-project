@@ -13,7 +13,7 @@ from pathlib import Path
 import boto3
 from PIL import Image
 
-from backend.app.config import (
+from app.config import (
     AWS_ACCESS_KEY_ID,
     AWS_REGION,
     AWS_SECRET_ACCESS_KEY,

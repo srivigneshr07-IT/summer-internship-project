@@ -8,7 +8,7 @@ import google.generativeai as genai
 from PIL import Image
 from fastapi import UploadFile
 
-from backend.app.config import (
+from app.config import (
     ALLOWED_IMAGE_TYPES,
     GEMINI_API_KEY,
     JSON_PATH,
