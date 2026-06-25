@@ -109,25 +109,35 @@ def predict(vehicle: VehicleInput):
     
     # Get dynamic price with market intelligence
     try:
-        dynamic_result = pricing_engine.get_dynamic_price(
-            ml_prediction=ml_price,
-            brand=brand_for_market,
-            model=payload.get("model"),
-            year=payload["myear"],
-            city=payload.get("city", "Chennai"),  # Default to Chennai if not provided
-            fuel=payload.get("fuel_type"),
-            transmission=payload.get("transmission")
-        )
+        # Check if database is available (skip if not)
+        import os
+        db_host = os.getenv('POSTGRES_HOST', '')
         
-        # Use dynamic price as final price
-        price = dynamic_result["final_price"]
-        market_data_available = dynamic_result["status"] == "success"
-        market_context = dynamic_result.get("market_context", {})
-        pricing_breakdown = dynamic_result.get("pricing_breakdown", {})
+        if db_host and 'database-1' not in db_host:
+            # Database available, use dynamic pricing
+            dynamic_result = pricing_engine.get_dynamic_price(
+                ml_prediction=ml_price,
+                brand=brand_for_market,
+                model=payload.get("model"),
+                year=payload["myear"],
+                city=payload.get("city", "Chennai"),
+                fuel=payload.get("fuel_type"),
+                transmission=payload.get("transmission")
+            )
+            
+            # Use dynamic price as final price
+            price = dynamic_result["final_price"]
+            market_data_available = dynamic_result["status"] == "success"
+            market_context = dynamic_result.get("market_context", {})
+            pricing_breakdown = dynamic_result.get("pricing_breakdown", {})
+        else:
+            # Database not available, use ML prediction only
+            raise Exception("Database not configured")
         
     except Exception as e:
         # Fallback to ML-only if dynamic pricing fails
-        print(f"Dynamic pricing failed: {e}. Using ML prediction only.")
+        if "database" not in str(e).lower() and "could not translate" not in str(e).lower():
+            print(f"Dynamic pricing failed: {e}. Using ML prediction only.")
         price = ml_price
         market_data_available = False
         market_context = {}
