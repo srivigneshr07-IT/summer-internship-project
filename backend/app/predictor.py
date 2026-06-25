@@ -117,18 +117,18 @@ def predict_price(input_df):
                 owner_enc = encoders['owner_type'].transform(['First'])[0]
             
             features = {
-                'brand_encoded': brand_enc,
-                'model_encoded': model_enc,
-                'year': year,
-                'kilometers': kilometers,
-                'fuel_encoded': encoders['fuel'].transform([fuel])[0],
-                'transmission_encoded': encoders['transmission'].transform([transmission])[0],
-                'city_encoded': encoders['city'].transform([city])[0],
-                'owner_encoded': owner_enc,
-                'car_age': car_age,
-                'brand_tier_encoded': encoders['brand_tier'].transform([brand_tier])[0],
-                'city_tier_encoded': encoders['city_tier'].transform([city_tier])[0],
-                'km_per_year': km_per_year
+                'brand_encoded': int(brand_enc),
+                'model_encoded': int(model_enc),
+                'year': int(year),
+                'kilometers': float(kilometers),
+                'fuel_encoded': int(encoders['fuel'].transform([fuel])[0]),
+                'transmission_encoded': int(encoders['transmission'].transform([transmission])[0]),
+                'city_encoded': int(encoders['city'].transform([city])[0]),
+                'owner_encoded': int(owner_enc),
+                'car_age': int(car_age),
+                'brand_tier_encoded': int(encoders['brand_tier'].transform([brand_tier])[0]),
+                'city_tier_encoded': int(encoders['city_tier'].transform([city_tier])[0]),
+                'km_per_year': float(km_per_year)
             }
             
             X = pd.DataFrame([features])
@@ -154,8 +154,9 @@ def predict_price(input_df):
             elif brand_tier == 'premium':
                 base_price = 600000
             
-            # Adjust for age
-            age_factor = max(0.5, 1 - (car_age * 0.08))
+            # Adjust for age (convert to scalar if needed)
+            car_age_val = int(car_age) if not isinstance(car_age, (int, float)) else car_age
+            age_factor = max(0.5, 1 - (car_age_val * 0.08))
             return float(base_price * age_factor)
     else:
         # Model v1 - direct prediction
