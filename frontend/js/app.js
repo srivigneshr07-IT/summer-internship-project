@@ -27,7 +27,6 @@ const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 const exportHistoryBtn = document.getElementById('exportHistoryBtn');
 const printReportBtn = document.getElementById('printReportBtn');
 const brandSearchInput = document.getElementById('brandSearch');
-const modelSearchInput = document.getElementById('modelSearch');
 const historySearchInput = document.getElementById('historySearch');
 const submitBtn = document.getElementById('submitBtn');
 const analyzeImagesBtn = document.getElementById('analyzeImagesBtn');
@@ -1149,13 +1148,14 @@ function updateMarketIntelligence(result) {
     }
 }
 
+// Brand search with autocomplete
 brandSearchInput.addEventListener('input', debounce(async (e) => {
     const q = e.target.value.trim();
     let suggestions = [];
     if (!q) {
         suggestions = brandOptions;
     } else {
-        // fetch broader suggestions and then show prefix-matched results
+        // Fetch suggestions from API
         suggestions = await fetchBrandSuggestions(q);
     }
     brandOptions = suggestions;
@@ -1171,7 +1171,7 @@ brandSearchInput.addEventListener('keydown', (e) => {
 });
 
 brandSearchInput.addEventListener('blur', () => {
-    // hide after a short delay to allow click handler to run
+    // Hide after a short delay to allow click handler to run
     setTimeout(() => clearSuggestions(), 150);
 });
 
@@ -1186,10 +1186,19 @@ brandSearchInput.addEventListener('change', async (e) => {
     }
     if (brandOptions.includes(chosen)) {
         brandSelect.value = chosen;
+        modelSelect.disabled = false;
         await loadModels(chosen);
     }
 });
-modelSearchInput.addEventListener('input', renderModelChoices);
+
+// Model select - show message if brand not selected
+modelSelect.addEventListener('focus', (e) => {
+    if (!brandSelect.value) {
+        alert('Please select a brand first');
+        e.target.blur();
+    }
+});
+
 historySearchInput.addEventListener('input', renderHistory);
 
 loadBrands().then(renderHistory);
