@@ -222,7 +222,7 @@ const loadModels = async (brand) => {
     } catch (error) {
         console.error(error);
         clearVehicleFields();
-        alert('Unable to load models for the selected brand.');
+        // Silently fail - user can retry
     }
 };
 
