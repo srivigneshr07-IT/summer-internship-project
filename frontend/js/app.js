@@ -168,12 +168,8 @@ const filterBrands = () => {
 };
 
 const filterModels = () => {
-    const query = modelSearchInput.value.trim().toLowerCase();
-    if (!query) {
-        return modelOptions;
-    }
-
-    return modelOptions.filter((model) => model.toLowerCase().includes(query));
+    // No filtering needed - just return all models
+    return modelOptions;
 };
 
 const buildUrl = (path, ...segments) => {
