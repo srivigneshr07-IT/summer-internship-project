@@ -49,19 +49,23 @@ class MarketIntelligence:
             # Calculate freshness cutoff
             cutoff_date = datetime.utcnow() - timedelta(days=self.freshness_days)
             
+            # Normalize brand name (remove extra words)
+            brand_normalized = brand.lower().split()[0] if brand else ""
+            
             # Base query - filter by brand, model, city, and freshness
+            # Use ILIKE for case-insensitive partial matching
             query = session.query(MarketPrice).filter(
-                MarketPrice.brand == brand,
-                MarketPrice.model == model,
-                MarketPrice.city == city,
+                MarketPrice.brand.ilike(f'%{brand_normalized}%'),
+                MarketPrice.model.ilike(f'%{model}%'),
+                MarketPrice.city.ilike(f'%{city}%'),
                 MarketPrice.last_seen_at >= cutoff_date
             )
             
             # Add optional filters
             if fuel:
-                query = query.filter(MarketPrice.fuel == fuel)
+                query = query.filter(MarketPrice.fuel.ilike(f'%{fuel}%'))
             if transmission:
-                query = query.filter(MarketPrice.transmission == transmission)
+                query = query.filter(MarketPrice.transmission.ilike(f'%{transmission}%'))
             
             # Get all matching listings
             listings = query.all()
