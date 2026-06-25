@@ -57,6 +57,19 @@ class PredictionResponse(BaseModel):
     price_range_min: float | None = None
 
     price_range_max: float | None = None
+    
+    # Market Intelligence fields
+    market_data_available: bool = False
+    
+    ml_prediction: float | None = None
+    
+    market_average: float | None = None
+    
+    market_median: float | None = None
+    
+    market_confidence: str | None = None
+    
+    market_sample_size: int = 0
 
 
 class PredictionHistoryItem(BaseModel):
