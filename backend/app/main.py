@@ -115,6 +115,8 @@ def predict(vehicle: VehicleInput):
         
         if db_host:
             # Database configured, try dynamic pricing
+            print(f"🔍 Attempting market intelligence with DB: {db_host[:20]}...")
+            
             dynamic_result = pricing_engine.get_dynamic_price(
                 ml_prediction=ml_price,
                 brand=brand_for_market,
@@ -125,6 +127,9 @@ def predict(vehicle: VehicleInput):
                 transmission=payload.get("transmission")
             )
             
+            print(f"✅ Market intelligence result: {dynamic_result.get('status')}")
+            print(f"   Sample size: {dynamic_result.get('market_context', {}).get('sample_size', 0)}")
+            
             # Use dynamic price as final price
             price = dynamic_result["final_price"]
             market_data_available = dynamic_result["status"] == "success"
@@ -132,13 +137,14 @@ def predict(vehicle: VehicleInput):
             pricing_breakdown = dynamic_result.get("pricing_breakdown", {})
         else:
             # Database not configured, use ML prediction only
+            print("⚠️  No database configured, using ML-only prediction")
             raise Exception("Database not configured")
         
     except Exception as e:
         # Fallback to ML-only if dynamic pricing fails
         error_msg = str(e).lower()
         if "database not configured" not in error_msg:
-            print(f"Dynamic pricing failed: {e}. Using ML prediction only.")
+            print(f"❌ Dynamic pricing failed: {e}. Using ML prediction only.")
         price = ml_price
         market_data_available = False
         market_context = {}
